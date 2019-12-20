@@ -24,8 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String MESSAGE_STATUS = "message_status";
     TextView tvStatus;
-    Button btnSend, btnStorageNotLow, btnBatteryNotLow, btnRequiresCharging, btnDeviceIdle,
-            btnNetworkType;
+    Button btnSend, mulConstbtn;
     OneTimeWorkRequest mRequest;
     WorkManager mWorkManager;
 
@@ -42,17 +41,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initViews() {
         tvStatus = findViewById(R.id.tvStatus);
         btnSend = findViewById(R.id.btnSend);
-        btnStorageNotLow = findViewById(R.id.buttonStorageNotLow);
-        btnBatteryNotLow = findViewById(R.id.buttonBatteryNotLow);
-        btnRequiresCharging = findViewById(R.id.buttonRequiresCharging);
-        btnDeviceIdle = findViewById(R.id.buttonDeviceIdle);
-        btnNetworkType = findViewById(R.id.buttonNetworkType);
+        mulConstbtn = findViewById(R.id.button_forAll);
+
         btnSend.setOnClickListener(this);
-        btnStorageNotLow.setOnClickListener(this);
-        btnBatteryNotLow.setOnClickListener(this);
-        btnRequiresCharging.setOnClickListener(this);
-        btnDeviceIdle.setOnClickListener(this);
-        btnNetworkType.setOnClickListener(this);
+        mulConstbtn.setOnClickListener(this);
+
     }
 
     @Override
@@ -63,12 +56,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnSend:
                 mRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class).build();
                 break;
-            case R.id.buttonStorageNotLow:
+            case R.id.button_forAll:
                 /**
                  * Constraints
                  * If TRUE task execute only when storage's is not low
                  */
-                mConstraints = new Constraints.Builder().setRequiresStorageNotLow(true).build();
+                mConstraints = new Constraints.Builder().setRequiresStorageNotLow(true).setRequiresBatteryNotLow(true).setRequiresCharging(true).setRequiresDeviceIdle(true).setRequiredNetworkType(NetworkType.CONNECTED).build();
                 /**
                  * OneTimeWorkRequest with requiresStorageNotLow Constraints
                  */
@@ -77,65 +70,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 .build();
 
                 break;
-            case R.id.buttonBatteryNotLow:
-                /**
-                 * Constraints
-                 * If TRUE task execute only when battery isn't low
-                 */
-                mConstraints = new Constraints.Builder().setRequiresBatteryNotLow(true).build();
-                /**
-                 * OneTimeWorkRequest with requiresBatteryNotLow Constraints
-                 */
-                mRequest =
-                        new OneTimeWorkRequest.Builder(NotificationWorker.class).setConstraints(mConstraints)
-                                .build();
-                break;
-            case R.id.buttonRequiresCharging:
-                /**
-                 * Constraints
-                 * If TRUE while the device is charging
-                 */
-                mConstraints = new Constraints.Builder().setRequiresCharging(true).build();
-                /**
-                 * OneTimeWorkRequest with requiresCharging Constraints
-                 */
-                mRequest =
-                        new OneTimeWorkRequest.Builder(NotificationWorker.class).setConstraints(mConstraints)
-                                .build();
-                break;
-            case R.id.buttonDeviceIdle:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    /**
-                     * Constraints
-                     * If TRUE while the  device is idle
-                     */
-                    mConstraints = new Constraints.Builder().setRequiresDeviceIdle(true).build();
-                    /**
-                     * OneTimeWorkRequest with requiresDeviceIdle Constraints
-                     */
-                    mRequest =
-                            new OneTimeWorkRequest.Builder(NotificationWorker.class).setConstraints(mConstraints)
-                                    .build();
-                }
-                break;
-            case R.id.buttonNetworkType:
-                /**
-                 * Constraints
-                 * Network type is conneted
-                 */
-                mConstraints =
-                        new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
-
-
-                /**
-                 * OneTimeWorkRequest with requiredNetworkType Connected Constraints
-                 */
-                mRequest =
-                        new OneTimeWorkRequest.Builder(NotificationWorker.class).setConstraints(mConstraints)
-                                .build();
-                break;
             default:
                 break;
+
+
         }
         /**
          * Fetch the particular task status using request ID
